@@ -8,11 +8,17 @@ const { validate, bookUploadRules } = require('../middleware/validate');
 // Multer — store file in memory, then stream to Supabase Storage
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB
   fileFilter: (req, file, cb) => {
     const allowed = ['application/pdf', 'application/epub+zip'];
-    if (allowed.includes(file.mimetype)) cb(null, true);
-    else cb(new Error('Only PDF and EPUB files are allowed.'));
+    // Some browsers send PDF with a different mimetype
+    const allowedExt = ['pdf', 'epub'];
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    if (allowed.includes(file.mimetype) || allowedExt.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF and EPUB files are allowed.'));
+    }
   },
 });
 
@@ -78,7 +84,10 @@ router.post('/books', upload.single('file'), validate(bookUploadRules), async (r
         contentType: req.file.mimetype,
         upsert: false,
       });
-    if (storageErr) throw storageErr;
+    if (storageErr) {
+      console.error('Supabase storage error:', storageErr);
+      return res.status(500).json({ error: `Storage error: ${storageErr.message}` });
+    }
 
     // Get public URL (only for public bucket) — we use signed URLs for private bucket
     const coverColors = { primary: '#fff3e8', secondary: '#e8f8f5', tertiary: '#f0e6ff' };
