@@ -89,11 +89,11 @@ export default function LandingPage() {
         <div style={{ display:'flex', gap:'2rem', flexWrap:'wrap',
           justifyContent:'center', maxWidth:800, margin:'0 auto' }}>
           {[
-            { step:'1', icon:'📝', title:'Sign Up', desc:'Enter your name, date of birth, class, and school.' },
-            { step:'2', icon:'🔑', title:'Log In', desc:'We calculate your age and route you to the right library.' },
-            { step:'3', icon:'📖', title:'Start Reading', desc:'Browse, search, and open any book in your category.' },
+            { icon:'📝', title:'Sign Up', desc:'Enter your name, date of birth, class, and school.' },
+            { icon:'🔑', title:'Log In', desc:'We calculate your age and route you to the right library.' },
+            { icon:'📖', title:'Start Reading', desc:'Browse, search, and open any book in your category.' },
           ].map(s => (
-            <div key={s.step} style={{ flex:'1 1 200px', maxWidth:240 }}>
+            <div key={s.title} style={{ flex:'1 1 200px', maxWidth:240 }}>
               <div style={{ width:56, height:56, borderRadius:'50%',
                 background:'var(--primary)', color:'white',
                 display:'flex', alignItems:'center', justifyContent:'center',
@@ -107,7 +107,7 @@ export default function LandingPage() {
 
       <footer style={{ background:'var(--primary)', color:'rgba(255,255,255,.5)',
         textAlign:'center', padding:'1.5rem', fontSize:'.85rem' }}>
-        © {new Date().getFullYear()} EduLib — Smart Digital Library
+        © {new Date().getFullYear()} Ototech System Solutions — EduLib Smart Digital Library
       </footer>
     </div>
   );
