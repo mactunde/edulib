@@ -15,6 +15,11 @@ const userRoutes      = require('./routes/users');
 const app  = express();
 const PORT = process.env.PORT || 4000;
 
+// ── Trust Render/Vercel/nginx proxy ───────────────────────────
+// Required on hosted platforms that sit behind a reverse proxy.
+// Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+app.set('trust proxy', 1);
+
 // ── Security ─────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({
