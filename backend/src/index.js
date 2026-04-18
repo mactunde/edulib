@@ -36,7 +36,16 @@ const authLimiter = rateLimit({
 
 app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(requestLogger);
+
+// ── Longer timeout for file upload routes ─────────────────────
+app.use('/api/admin/books', (req, res, next) => {
+  if (req.method === 'POST') {
+    res.setTimeout(120000); // 2 minutes for uploads
+  }
+  next();
+});
 
 // ── Routes ────────────────────────────────────────────────────
 app.use('/api/auth',     authLimiter, authRoutes);
