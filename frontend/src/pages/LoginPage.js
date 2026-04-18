@@ -68,7 +68,7 @@ export default function LoginPage() {
 
           <div style={{ marginTop:'1.25rem', padding:'.75rem', background:'var(--bg)',
             borderRadius:8, fontSize:'.8rem', color:'var(--muted)' }}>
-            🔑 <strong>Admin:</strong> use credentials set in your <code>.env</code> file
+             © <strong> 2026 </strong> Ototech System Solutions
           </div>
         </div>
       </div>
