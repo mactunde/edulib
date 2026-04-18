@@ -233,14 +233,25 @@ function UploadBook() {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
       fd.append('file', file);
-      await adminAPI.uploadBook(fd);
+
+      // Use axios directly so we can track upload progress
+      const api = require('../lib/api').default;
+      await api.post('/api/admin/books', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000, // 2 minute timeout for large files
+        onUploadProgress: (e) => {
+          const pct = Math.round((e.loaded * 100) / e.total);
+          setProgress(pct);
+        },
+      });
+
       toast.success(`"${form.title}" uploaded successfully! 🎉`);
       setForm({ title:'', author:'', subject:'', category:'primary', description:'', emoji:'📗' });
       setFile(null);
-      // Reset file input
       document.getElementById('file-input').value = '';
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Upload failed. Please try again.');
+      const msg = err.response?.data?.error || err.message || 'Upload failed. Please try again.';
+      toast.error(msg);
     } finally {
       setUploading(false);
       setProgress(0);
@@ -300,6 +311,21 @@ function UploadBook() {
             <button type="submit" className="btn btn-primary btn-full" disabled={uploading}>
               {uploading ? `⏳ Uploading… ${progress}%` : '⬆️ Upload Book to Library'}
             </button>
+            {uploading && (
+              <div style={{ marginTop:'.75rem' }}>
+                <div style={{ background:'var(--border)', borderRadius:8, height:8, overflow:'hidden' }}>
+                  <div style={{
+                    height:'100%', borderRadius:8,
+                    background:'linear-gradient(90deg,var(--accent-s),var(--accent-p))',
+                    width:`${progress}%`,
+                    transition:'width .3s ease',
+                  }} />
+                </div>
+                <p style={{ textAlign:'center', fontSize:'.8rem', color:'var(--muted)', marginTop:'.4rem' }}>
+                  {progress < 100 ? `Uploading file… ${progress}%` : '✅ File sent — saving to library…'}
+                </p>
+              </div>
+            )}
           </div>
         </form>
       </div>
